@@ -5,9 +5,8 @@
       "default": true
     }
   ],
-  "name": "trailhead-salesforce-lwc-basics",
+  "name": "bikeCard",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "67.0",
-  "defaultLwcLanguage": "javascript"
+  "sourceApiVersion": "67.0"
 }
