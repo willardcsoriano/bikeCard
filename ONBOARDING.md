@@ -1,10 +1,11 @@
 # Onboarding — LWC Basics (Badge 10)
 
 **What this is:** a step-by-step guide to scaffold this repo, connect your Trailhead
-Playground, retrieve org metadata, and run the per-unit Git workflow.
+Playground, create LWC components locally, deploy them to the org, and run the
+per-unit Git workflow.
 
 **What this isn't:** a Trailhead tutorial. Complete the hands-on challenges in the
-Trailhead UI first — this doc only covers how your local repo mirrors the org.
+Trailhead UI first — this doc only covers how your local repo drives the org.
 
 ---
 
@@ -115,33 +116,48 @@ sf config set target-org trailhead-playground
 
 ---
 
-## Step 3 — Retrieve baseline org metadata
+## Step 3 — Create a component and deploy
 
-Your playground comes pre-configured with metadata from the Trailhead challenge
-(accounts, contacts, etc.). Pull it into the repo so you have a snapshot of the
-starting state:
+The LWC Basics badge has you build locally, then push to the org — not the other
+way around. Your playground starts empty; there's nothing to retrieve.
 
-```bash
-sf project retrieve start \
-  --manifest manifest/package.xml \
-  --target-org trailhead-playground
-```
+Follow the Trailhead unit instructions to create each component. The raw unit
+content is saved in `docs/` for quick reference without switching tabs:
 
-This downloads everything listed in `manifest/package.xml` into `force-app/`.
+| Unit | File |
+|------|------|
+| Unit 2 — Create Lightning Web Components | [`docs/unit-02-create-lwc.md`](docs/unit-02-create-lwc.md) |
 
-**Commit it separately** from the scaffolding. Mixing project structure and org
-metadata into one commit makes it harder to revert one without the other:
+From the CLI,
+the generic pattern for a new LWC is:
 
 ```bash
-git add .
-git commit -m "chore: retrieve baseline org metadata"
-git push
+sf lightning generate component \
+  --name <componentName> \
+  --type lwc \
+  --output-dir force-app/main/default/lwc
 ```
 
-> **Long-term reasoning:** this baseline commit is your "before" picture. When you
-> finish a unit and retrieve again, `git diff baseline..HEAD -- force-app` shows
-> exactly what the unit changed. It's also your reset point — if the org gets into
-> a weird state, you can re-create it from this snapshot.
+Or use the VS Code Command Palette: `SFDX: Create Lightning Web Component`.
+
+Once you've written the component files (`.html`, `.js`, `.js-meta.xml`), deploy
+them to your playground:
+
+```bash
+sf project deploy start \
+  --source-dir force-app/main/default/lwc/<componentName>
+```
+
+> This pushes only the component you just created. Targeted deploys are faster
+> than pushing the whole `force-app/` tree, and they make it obvious what changed.
+
+Verify the deploy succeeded:
+```bash
+sf project deploy report
+```
+
+Repeat this loop for each component the unit asks for. When the unit is complete,
+commit the local files (see Step 4).
 
 ---
 
@@ -161,39 +177,39 @@ git checkout -b feat/unit-0X-<slug>
 `feat/unit-04-events`. The `feat/` prefix makes intent scannable at a glance and
 matches Conventional Commits types. Keep the slug short and dasherized.
 
-### 4.2 Do the unit
+### 4.2 Build the component locally
 
-Complete the Trailhead hands-on challenges in the Salesforce UI / Developer Console.
-Your org now has new Apex classes, LWC components, or other metadata that doesn't
-exist in the repo yet.
+Complete the Trailhead hands-on challenges. Create components via the CLI
+(`sf lightning generate component`) or VS Code Command Palette, then edit the
+`.html`, `.js`, and `.js-meta.xml` files.
 
-### 4.3 Pull the changes into the repo
+Write a Jest test for each component under `force-app/main/default/lwc/<name>/__tests__/`.
+Run them locally before deploying:
 
 ```bash
-sf project retrieve start \
-  --manifest manifest/package.xml \
-  --target-org trailhead-playground
+npm test
 ```
 
-> If you added **new** metadata types that aren't in `manifest/package.xml` yet
-> (for example, a StaticResource for the first time), regenerate the manifest first:
-> ```bash
-> sf project generate manifest \
->   --from-org trailhead-playground \
->   --output-dir manifest
-> ```
-> Then run the `retrieve start` command above. The manifest is your "what to pull"
-> checklist — if a metadata type isn't in it, `retrieve` skips it silently.
+### 4.3 Deploy to the playground
+
+Push the component to your org:
+
+```bash
+sf project deploy start --source-dir force-app/main/default/lwc/<componentName>
+```
+
+Deploy only the component you worked on. Targeted deploys are faster and make it
+clear what changed.
 
 ### 4.4 Commit and open a PR
 
 ```bash
-git add force-app manifest
+git add force-app
 git commit -m "feat(unit-0X): <what you did>"
 git push -u origin feat/unit-0X-<slug>
 gh pr create \
   --title "feat(unit-0X): <Unit Title>" \
-  --body "Consolidated metadata and code for Unit 0X."
+  --body "LWC component and tests for Unit 0X."
 ```
 
 **Conventional Commits:** use `feat`, `fix`, `docs`, `chore`, or `refactor` as the
@@ -227,8 +243,9 @@ recommended in the `git/NEAT-WORKFLOWS.MD` reference.
 |---|---|
 | Auth | `sf org login web -a trailhead-playground` |
 | Set default org | `sf config set target-org trailhead-playground` |
-| Pull org metadata | `sf project retrieve start --manifest manifest/package.xml` |
-| Regenerate manifest | `sf project generate manifest --from-org trailhead-playground --output-dir manifest` |
+| Create LWC component | `sf lightning generate component --name <name> --type lwc --output-dir force-app/main/default/lwc` |
+| Deploy component | `sf project deploy start --source-dir force-app/main/default/lwc/<name>` |
+| Deploy report | `sf project deploy report` |
 | New unit branch | `git checkout -b feat/unit-0X-<slug>` |
 | Open a PR | `gh pr create --title "feat(unit-0X): <title>" --body "<body>"` |
 | Merge and clean up | `gh pr merge --squash --delete-branch` |
