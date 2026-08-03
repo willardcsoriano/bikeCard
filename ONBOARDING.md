@@ -1,10 +1,10 @@
 # Onboarding — LWC Basics (Badge 10)
 
-> **What this is:** a step-by-step guide to scaffold this repo, connect your Trailhead
-> Playground, retrieve org metadata, and run the per-unit Git workflow.
->
-> **What this isn't:** a Trailhead tutorial. Complete the hands-on challenges in the
-> Trailhead UI first — this doc only covers how your local repo mirrors the org.
+**What this is:** a step-by-step guide to scaffold this repo, connect your Trailhead
+Playground, retrieve org metadata, and run the per-unit Git workflow.
+
+**What this isn't:** a Trailhead tutorial. Complete the hands-on challenges in the
+Trailhead UI first — this doc only covers how your local repo mirrors the org.
 
 ---
 
@@ -61,7 +61,7 @@ git push -u origin main
 
 > **Why `main` not `master`:** it's the convention across all modern Git platforms
 > and matches the branching strategy recommended in the `git/` reference docs.
-> `sf template generate project` creates `main` by default.
+> This repo was already initialized on `main` — keep it that way.
 
 ---
 
