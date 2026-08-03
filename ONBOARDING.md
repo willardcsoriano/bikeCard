@@ -27,25 +27,33 @@ Trailhead UI first — this doc only covers how your local repo mirrors the org.
 
 ## Step 1 — Scaffold the SFDX project
 
-Run this from **inside** the repo directory (`trailhead-salesforce-lwc-basics/`):
+Run this from the **parent directory** of the repo (one level up). The template
+always creates a subfolder named after `--name`, so you can't be inside it yet:
 
 ```bash
+cd ..
 sf template generate project \
   --name trailhead-salesforce-lwc-basics \
   --output-dir . \
   --template standard \
   --lwc-language javascript \
   --manifest
+cd trailhead-salesforce-lwc-basics
 ```
 
 **What this does:**
 
 | Flag | What it means |
 |------|---------------|
-| `--output-dir .` | Writes files into the current directory (the repo root) instead of a subfolder |
+| `--output-dir .` | Creates `trailhead-salesforce-lwc-basics/` right here — the repo root you already initialized |
 | `--template standard` | Standard project layout: `force-app/`, `manifest/`, `sfdx-project.json`, etc. |
 | `--lwc-language javascript` | LWC components default to `.js` (not TypeScript). Explicit is better than implicit. |
 | `--manifest` | Generates a `manifest/package.xml` upfront so you don't forget it later |
+
+> **Why `cd ..` first:** `--name` always creates a subfolder. If you run the command
+> from inside the repo directory with `--output-dir .`, you end up with a nested
+> `trailhead-salesforce-lwc-basics/trailhead-salesforce-lwc-basics/` — which is wrong.
+> Running from the parent directory avoids this.
 
 > **Why `--manifest` now:** generating the manifest at scaffold time means you can
 > immediately retrieve metadata after login. Without it, you'd need to generate one
@@ -62,6 +70,18 @@ git push -u origin main
 > **Why `main` not `master`:** it's the convention across all modern Git platforms
 > and matches the branching strategy recommended in the `git/` reference docs.
 > This repo was already initialized on `main` — keep it that way.
+
+### If you already ran this inside the repo and got a nested directory
+
+Move everything back up one level:
+
+```bash
+mv trailhead-salesforce-lwc-basics/* .
+mv trailhead-salesforce-lwc-basics/.* . 2>/dev/null
+rmdir trailhead-salesforce-lwc-basics
+git add -A
+git commit --amend -m "chore: scaffold SFDX project (LWC Basics)"
+```
 
 ---
 
